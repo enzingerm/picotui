@@ -133,6 +133,22 @@ class WLabel(Widget):
         self.wr(self.t)
 
 
+class Box(Widget):
+    def __init__(self, width, height, color):
+        self.w = width
+        self.h = height
+        self.color = color
+
+    def do_redraw(self):
+        self.attr_color(C_WHITE, self.color)
+        for i in range(self.h):
+            self.goto(self.x, self.y + i)
+            self.wr( " " * self.w)
+        self.attr_reset()
+    def set_color(self, c):
+        self.color = c 
+
+
 class WButton(Widget):
 
     focusable = True
