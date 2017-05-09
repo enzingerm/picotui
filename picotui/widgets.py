@@ -153,11 +153,12 @@ class WButton(Widget):
 
     focusable = True
 
-    def __init__(self, w, text):
+    def __init__(self, w, text, enabled=True):
         self.t = text
         self.h = 1
         self.w = w or len(text) + 2
-        self.disabled = False
+        self.disabled = not enabled
+        self.focusable = enabled
         self.focus = False
         self.finish_dialog = False
 
@@ -189,6 +190,17 @@ class WButton(Widget):
         # reach here.
         if key == KEY_ENTER:
             self.on_click()
+
+    def enable(self):
+        self.set_status(True)
+
+    def disable(self):
+        self.set_status(False)
+
+    def set_status(self, status):
+        self.disabled = not status
+        self.focusable = status
+        self.redraw()
 
     def on_click(self):
         pass
