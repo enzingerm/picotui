@@ -13,7 +13,7 @@ class WMenuBar(ItemSelWidget):
         self.focus = False
         self.permanent = False
 
-    def redraw(self):
+    def do_redraw(self):
         if self.focus:
             self.cursor(False)
         self.goto(self.x, self.y)
@@ -124,7 +124,7 @@ class WMenuBox(ItemSelWidget):
             w = max(w, len(i[0]))
         self.w = w + 2
 
-    def redraw(self):
+    def do_redraw(self):
         self.dialog_box(self.x, self.y, self.w, self.h)
         i = 0
         for item in self.items:

@@ -1,5 +1,5 @@
 import os
-
+import sys
 from .screen import *
 
 
@@ -12,6 +12,9 @@ ACTION_PREV = 1003
 class Widget(Screen):
 
     focusable = False
+
+    _threadsafe_redraws = False
+    _redraw_lock = None
     # If set to non-False, pressing Enter on this widget finishes
     # dialog, with Dialog.loop() return value being this value.
     finish_dialog = False
@@ -39,6 +42,15 @@ class Widget(Screen):
         if not items:
             return 0
         return max((len(t) for t in items))
+
+    def redraw(self):
+        if self.has_threadsafe_updates():
+            lock = self._get_redraw_lock()
+            lock.acquire()
+            self.do_redraw()
+            lock.release()
+        else:
+            self.do_redraw()
 
     def set_cursor(self):
         # By default, a widget doesn't use text cursor, so disables it
@@ -77,6 +89,21 @@ class Widget(Screen):
 
             if res is not None and res is not True:
                 return res
+
+    @staticmethod
+    def set_threadsafe(ts=True):
+        Widget._threadsafe_redraws = ts
+
+    @staticmethod
+    def has_threadsafe_updates():
+        return Widget._threadsafe_redraws
+
+    @staticmethod
+    def _get_redraw_lock():
+        if not Widget._redraw_lock:
+            from threading import Lock
+            Widget._redraw_lock = Lock()
+        return Widget._redraw_lock
 
 
 # Widget with few internal selectable items

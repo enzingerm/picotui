@@ -7,7 +7,7 @@ class Dialog(Widget):
 
     finish_on_esc = True
 
-    def __init__(self, x, y, w=0, h=0, title=""):
+    def __init__(self, x, y, w=0, h=0, title="", threadsafe=False):
         super().__init__()
         self.x = x
         self.y = y
@@ -20,6 +20,7 @@ class Dialog(Widget):
         # On both sides
         self.border_w = 2
         self.border_h = 2
+        self.threadsafe = threadsafe
         self.focus_w = None
         self.focus_idx = -1
 
@@ -40,7 +41,7 @@ class Dialog(Widget):
         self.w = max(self.w, w + self.border_w - 1) + extra_w
         self.h = max(self.h, h + self.border_h - 1) + extra_h
 
-    def redraw(self):
+    def do_redraw(self):
         # Init some state on first redraw
         if self.focus_idx == -1:
             self.autosize()
@@ -52,7 +53,7 @@ class Dialog(Widget):
         self.cursor(False)
         self.dialog_box(self.x, self.y, self.w, self.h, self.title)
         for w in self.childs:
-            w.redraw()
+            w.do_redraw()
         # Then give widget in focus a chance to enable cursor
         if self.focus_w:
             self.focus_w.set_cursor()
@@ -127,7 +128,7 @@ class WLabel(Widget):
         self.h = 1
         self.w = len(text)
 
-    def redraw(self):
+    def do_redraw(self):
         self.goto(self.x, self.y)
         self.wr(self.t)
 
@@ -144,7 +145,7 @@ class WButton(Widget):
         self.focus = False
         self.finish_dialog = False
 
-    def redraw(self):
+    def do_redraw(self):
         self.goto(self.x, self.y)
         if self.disabled:
             self.attr_color(C_WHITE, C_GRAY)
@@ -184,7 +185,7 @@ class WFrame(Widget):
         self.h = h
         self.t = title
 
-    def redraw(self):
+    def do_redraw(self):
         self.draw_box(self.x, self.y, self.w, self.h)
         if self.t:
             pos = 1
@@ -204,7 +205,7 @@ class WCheckbox(Widget):
         self.state = state
         self.focus = False
 
-    def redraw(self):
+    def do_redraw(self):
         self.goto(self.x, self.y)
         if self.focus:
             self.attr_color(C_B_BLUE, None)
@@ -239,7 +240,7 @@ class WRadioButton(ItemSelWidget):
         self.w = 4 + self.longest(items)
         self.focus = False
 
-    def redraw(self):
+    def do_redraw(self):
         i = 0
         if self.focus:
             self.attr_color(C_B_BLUE, None)
@@ -362,7 +363,7 @@ class WDropDown(Widget):
         self.w = w
         self.focus = False
 
-    def redraw(self):
+    def do_redraw(self):
         self.goto(self.x, self.y)
         if self.focus:
             self.attr_color(C_B_WHITE, C_CYAN)
@@ -470,10 +471,10 @@ class WComboBox(WTextEntry):
         self.w = w
         self.items = items
 
-    def redraw(self):
+    def do_redraw(self):
         self.goto(self.x + self.w - 1, self.y)
         self.wr(symbols.DOWN_ARROW)
-        super().redraw()
+        super().do_redraw()
 
     def get_choices(self, substr):
         return self.items

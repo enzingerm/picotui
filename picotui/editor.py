@@ -46,7 +46,7 @@ class Editor(Widget):
         self.content = lines
         self.total_lines = len(lines)
 
-    def redraw(self):
+    def do_redraw(self):
         self.cursor(False)
         i = self.top_line
         r = self.y
