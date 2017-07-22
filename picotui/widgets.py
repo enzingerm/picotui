@@ -153,9 +153,9 @@ class WButton(Widget):
 
     focusable = True
 
-    def __init__(self, w, text, enabled=True):
+    def __init__(self, w, text, enabled=True, height=1):
         self.t = text
-        self.h = 1
+        self.h = height
         self.w = w or len(text) + 2
         self.disabled = not enabled
         self.focusable = enabled
@@ -163,7 +163,6 @@ class WButton(Widget):
         self.finish_dialog = False
 
     def do_redraw(self):
-        self.goto(self.x, self.y)
         if self.disabled:
             self.attr_color(C_WHITE, C_GRAY)
         else:
@@ -171,7 +170,12 @@ class WButton(Widget):
                 self.attr_color(C_B_WHITE, C_GREEN)
             else:
                 self.attr_color(C_BLACK, C_GREEN)
-        self.wr(self.t.center(self.w))
+        for i in range(self.h):
+            self.goto(self.x, self.y + i)
+            if i == self.h // 2:
+                self.wr(self.t.center(self.w))
+            else:
+                self.wr(" " * self.w)
         self.attr_reset()
 
     def handle_mouse(self, x, y):
